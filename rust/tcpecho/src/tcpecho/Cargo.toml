@@ -1,0 +1,13 @@
+[package]
+name = "tcpecho"
+version = "0.0.1"
+authors = []
+
+[lib]
+name = "tcpecho"
+path = "lib.rs"
+
+[dependencies]
+getopts = "*"
+libc = "*"
+

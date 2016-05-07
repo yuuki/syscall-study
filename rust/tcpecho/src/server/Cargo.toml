@@ -1,0 +1,17 @@
+[package]
+name = "server"
+version = "0.0.1"
+authors = []
+
+[lib]
+name = "server"
+path = "server.rs"
+
+[dependencies]
+getopts = "*"
+libc = "*"
+# tcpecho = { path="../tcpecho" }
+
+[[bin]]
+name = "server"
+path = "main.rs"
