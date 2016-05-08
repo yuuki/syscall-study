@@ -1,6 +1,10 @@
 extern crate getopts;
 extern crate server;
 
+#[macro_use]
+extern crate log;
+extern crate env_logger;
+
 use getopts::Options;
 use std::env;
 
@@ -9,6 +13,8 @@ const LOOPBACK_ADDR: &'static str = "127.0.0.1";
 const DEFAULT_PORT: u16 = 10100;
 
 fn main() {
+    let _ = env_logger::init();
+
     let args: Vec<String> = env::args().collect();
 
     let mut opts = Options::new();
