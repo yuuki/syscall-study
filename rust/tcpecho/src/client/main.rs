@@ -19,8 +19,8 @@ fn main() {
     let mut opts = Options::new();
     opts.optopt("H", "host", "bind hostname or ipaddr", "HOST");
     opts.optopt("P", "port", "bind port", "PORT");
-    opts.optopt("n", "msgnum", "the number of messages", "MSGNUM");
-    opts.optopt("t", "threadnum", "the number of threads", "THREAD");
+    opts.optopt("m", "nmsgs", "the number of messages", "NMSGS");
+    opts.optopt("t", "nthreads", "the number of threads", "NTHREADS");
     opts.optflag("h", "help", "display this help and exit");
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => m,
@@ -43,14 +43,14 @@ fn main() {
         },
         None    => DEFAULT_PORT,
     };
-    let msgnum = match matches.opt_str("msgnum") {
+    let nmsgs = match matches.opt_str("nmsgs") {
         Some(m) => match m.trim().parse() {
             Ok(num) => num,
             Err(err) => panic!(err),
         },
         None    => DEFAULT_MSGNUM,
     };
-    let threadnum = match matches.opt_str("threadnum") {
+    let nthreads = match matches.opt_str("nthreads") {
         Some(m) => match m.trim().parse() {
             Ok(num) => num,
             Err(err) => panic!(err),
@@ -58,5 +58,5 @@ fn main() {
         None    => DEFAULT_THREADNUM,
     };
 
-    client::run(host.as_str(), port, msgnum, threadnum);
+    client::run(host.as_str(), port, nmsgs, nthreads);
 }

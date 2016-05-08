@@ -34,16 +34,16 @@ fn spawn_with(host: String, port: u16, nmsgs: usize) -> thread::JoinHandle<()> {
     })
 }
 
-pub fn run(host: &str, port: u16, msg_num: usize, thread_num: usize) {
+pub fn run(host: &str, port: u16, nmsgs: usize, nthreads: usize) {
     println!("--> Connecting to `{}:{}`", host, port);
 
-    let children: Vec<_> = (0..thread_num).map(|_| {
-        spawn_with(host.to_string(), port.clone(), msg_num.clone())
+    let children: Vec<_> = (0..nthreads).map(|_| {
+        spawn_with(host.to_string(), port.clone(), nmsgs.clone())
     }).collect();
 
     for child in children {
         let _ = child.join();
     }
 
-    println!("\n{} threads {} messages sent.", thread_num, msg_num);
+    println!("\n{} threads {} messages sent.", nthreads, nmsgs);
 }
