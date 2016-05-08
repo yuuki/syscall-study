@@ -3,11 +3,10 @@ extern crate rand;
 #[macro_use]
 extern crate log;
 
-use std::io;
 use std::io::prelude::*;
 use std::net::{TcpStream};
 
-pub fn run(host: &str, port: u16) {
+pub fn run(host: &str, port: u16, msg_num: usize) {
     println!("--> Connecting to `{}:{}`", host, port);
     let mut stream = match TcpStream::connect((host, port)) {
         Ok(s)  => s,
@@ -25,14 +24,12 @@ pub fn run(host: &str, port: u16) {
         wbuf[i] = rand::random::<u8>();
     }
 
-    let _ = stream.write(wbuf);
-    let _ = stream.read(rbuf);
+    for _ in 0..msg_num {
+        let _ = stream.write(wbuf);
+        let _ = stream.read(rbuf);
 
-    match io::stdout().write_all(rbuf) {
-        Ok(_) => {},
-        Err(err) => {
-            error!("{}", err);
-            return
-        },
-    };
+        print!(".");
+    }
+
+    println!("\n1 connection {} messages sent.", msg_num);
 }
