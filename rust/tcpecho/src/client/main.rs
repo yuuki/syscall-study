@@ -9,6 +9,7 @@ const NAME: &'static str = "client";
 const LOOPBACK_ADDR: &'static str = "127.0.0.1";
 const DEFAULT_PORT: u16 = 10100;
 const DEFAULT_MSGNUM: usize = 10;
+const DEFAULT_THREADNUM: usize = 1;
 
 fn main() {
     let _ = env_logger::init();
@@ -19,6 +20,7 @@ fn main() {
     opts.optopt("H", "host", "bind hostname or ipaddr", "HOST");
     opts.optopt("P", "port", "bind port", "PORT");
     opts.optopt("n", "msgnum", "the number of messages", "MSGNUM");
+    opts.optopt("t", "threadnum", "the number of threads", "THREAD");
     opts.optflag("h", "help", "display this help and exit");
     let matches = match opts.parse(&args[1..]) {
         Ok(m) => m,
@@ -48,6 +50,13 @@ fn main() {
         },
         None    => DEFAULT_MSGNUM,
     };
+    let threadnum = match matches.opt_str("threadnum") {
+        Some(m) => match m.trim().parse() {
+            Ok(num) => num,
+            Err(err) => panic!(err),
+        },
+        None    => DEFAULT_THREADNUM,
+    };
 
-    client::run(host.as_str(), port, msgnum);
+    client::run(host.as_str(), port, msgnum, threadnum);
 }
