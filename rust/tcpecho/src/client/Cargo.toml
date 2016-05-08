@@ -11,6 +11,8 @@ path = "client.rs"
 getopts = "*"
 libc = "*"
 rand = "*"
+log = "*"
+env_logger = "*"
 # tcpecho = { path="../tcpecho" }
 
 [[bin]]
