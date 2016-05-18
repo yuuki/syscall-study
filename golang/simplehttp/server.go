@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"syscall"
 )
 
 func handleClient(conn net.Conn) error {
@@ -45,6 +46,14 @@ func Run(host string, port int) int {
 			continue
 		}
 		fmt.Printf(".")
+
+		ret, _, errno := syscall.Syscall(syscall.SYS_FORK, 0, 0, 0)
+		if errno != 0 {
+			return int(errno)
+		}
+		if ret != 0 {
+			continue
+		}
 
 		if err := handleClient(conn); err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err)
