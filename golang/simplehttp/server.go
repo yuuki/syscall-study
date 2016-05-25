@@ -52,6 +52,7 @@ func Run(host string, port int) int {
 			return int(errno)
 		}
 		if ret != 0 {
+			conn.Close() // parent process close
 			continue
 		}
 
@@ -60,7 +61,7 @@ func Run(host string, port int) int {
 			continue
 		}
 
-		conn.Close()
+		conn.Close() // child process close
 	}
 
 	return 0
