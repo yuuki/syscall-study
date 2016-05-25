@@ -62,6 +62,7 @@ func Run(host string, port int) int {
 		}
 
 		conn.Close() // child process close
+		os.Exit(0) // child process exit
 	}
 
 	return 0
