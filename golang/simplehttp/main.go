@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"os"
+	"runtime"
 )
 
 func main() {
@@ -12,6 +13,8 @@ func main() {
 	flag.IntVar(&port, "port", 10020, "bind port")
 
 	flag.Parse()
+
+	runtime.GOMAXPROCS(1)
 
 	os.Exit(Run(host, port))
 }
