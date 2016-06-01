@@ -44,13 +44,14 @@ func Run(host string, port int) int {
 
 	signal.Notify(sigs, syscall.SIGCHLD)
 	go func() {
-		<-sigs
 		var status syscall.WaitStatus
 		var rusage syscall.Rusage
-		_, err := syscall.Wait4(-1, &status, 0, &rusage)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%s\n", err)
-			return
+		for {
+			<-sigs
+			_, err := syscall.Wait4(-1, &status, 0, &rusage)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%s\n", err)
+			}
 		}
 	}()
 
