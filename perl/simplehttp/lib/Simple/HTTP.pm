@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use utf8;
 
-use POSIX qw(EINTR);
+use POSIX qw(:sys_wait_h);
 use IO::Socket::INET;
 use Socket qw(IPPROTO_TCP TCP_NODELAY);
 
@@ -37,6 +37,13 @@ sub run {
         Proto     => 'tcp',
         ReuseAddr => 1,
     );
+
+    $SIG{'CHLD'} = sub {
+        my $pid;
+        do {
+            $pid = waitpid(-1, WNOHANG);
+        } while $pid > 0;
+    };
 
     while (1) {
         if (my ($conn, $peer) = $listen->accept) {
