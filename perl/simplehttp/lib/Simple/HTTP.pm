@@ -25,8 +25,23 @@ sub handle_connection {
     $conn->send("HTTP/1.0 200 OK\n");
 }
 
+sub worker_handler {
+    my ($listen) = @_;
+
+    while (1) {
+        if (my ($conn, $peer) = $listen->accept) {
+            infolog(".");
+            my ($peerport, $peerhost) = unpack_sockaddr_in $peer;
+            my $peeraddr = inet_ntoa($peerhost);
+
+            handle_connection($conn);
+            $conn->close;
+        }
+    }
+}
+
 sub run {
-    my ($host, $port) = @_;
+    my ($host, $port, $workers) = @_;
 
 	infolog("--> listening to %s:%d\n", $host, $port);
 
@@ -38,34 +53,30 @@ sub run {
         ReuseAddr => 1,
     );
 
-    $SIG{'CHLD'} = sub {
-        my $pid;
-        do {
-            $pid = waitpid(-1, WNOHANG);
-        } while $pid > 0;
+    my $worker_pids = [];
+    for (my $i = 0; $i < $workers; $i++) {
+        my $pid = fork;
+        unless (defined $pid) {
+            errlog("fork failed:$!");
+            next;
+        }
+        unless ($pid) {
+            worker_handler($listen);
+        }
+
+        push @$worker_pids, $pid;
+    }
+
+    $SIG{INT} = sub {
+        for (my $i = 0; $i < $workers; $i++) {
+            kill $worker_pids->[$i];
+        }
+        while (wait() > 0) { };
+        exit 0;
     };
 
     while (1) {
-        if (my ($conn, $peer) = $listen->accept) {
-            infolog(".");
-            my ($peerport, $peerhost) = unpack_sockaddr_in $peer;
-            my $peeraddr = inet_ntoa($peerhost);
-
-            my $pid = fork;
-            unless (defined $pid) {
-                errlog("fork failed:$!");
-                next;
-            }
-            unless ($pid) {
-                # child process
-                $listen->close;
-                handle_connection($conn);
-                $conn->close;
-                exit(0);
-            }
-
-            $conn->close;
-        }
+        sleep 1;
     }
 }
 
